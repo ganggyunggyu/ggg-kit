@@ -1,0 +1,61 @@
+{
+  "name": "@ganggyunggyu/shared",
+  "version": "0.1.0",
+  "description": "GGG 프로젝트 공용 상수/타입/유틸 라이브러리",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    },
+    "./constants": {
+      "types": "./dist/constants/index.d.ts",
+      "import": "./dist/constants/index.mjs",
+      "require": "./dist/constants/index.js"
+    },
+    "./types": {
+      "types": "./dist/types/index.d.ts",
+      "import": "./dist/types/index.mjs",
+      "require": "./dist/types/index.js"
+    },
+    "./utils": {
+      "types": "./dist/utils/index.d.ts",
+      "import": "./dist/utils/index.mjs",
+      "require": "./dist/utils/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsup",
+    "lint": "eslint src --ext .ts",
+    "test": "vitest",
+    "prepublishOnly": "pnpm build"
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "restricted",
+    "registry": "https://npm.pkg.github.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ganggyunggyu/shared-kit.git"
+  },
+  "keywords": [
+    "shared",
+    "constants",
+    "utils",
+    "types"
+  ],
+  "author": "GGG",
+  "license": "UNLICENSED",
+  "devDependencies": {
+    "tsup": "^8.0.0",
+    "typescript": "^5.6.0",
+    "eslint": "^9.0.0",
+    "vitest": "^2.0.0"
+  }
+}
