@@ -1,6 +1,6 @@
 {
   "name": "@ganggyunggyu/shared",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "GGG 프로젝트 공용 상수/타입/유틸 라이브러리",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
