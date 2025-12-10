@@ -1,0 +1,43 @@
+export interface PopularSelectorConfig {
+  collectionRoot: string;
+  headline: string;
+  blockModList: string;
+  blockMod: string;
+  blogInfo: string;
+  postTitle: string;
+  postTitleWrap: string;
+
+  singleIntentionList: string;
+  intentionItem: string;
+  intentionTitle: string;
+  intentionHeadline: string;
+  intentionPreview: string;
+  intentionProfile: string;
+  intentionImage: string;
+}
+
+export const DEFAULT_SELECTORS: PopularSelectorConfig = {
+  collectionRoot: '.fds-collection-root',
+  headline: '.fds-comps-header-headline',
+  blockModList: '.fds-ugc-block-mod-list',
+  blockMod: '.fds-ugc-block-mod',
+  blogInfo: '.fds-info-inner-text',
+  postTitle: '.fds-comps-right-image-text-title',
+  postTitleWrap: '.fds-comps-right-image-text-title-wrap',
+
+  singleIntentionList:
+    '.fds-ugc-single-intention-item-list, .fds-ugc-single-intention-item-list-rra',
+  intentionItem: '[data-template-id="ugcItem"]',
+  intentionTitle: 'a[data-heatmap-target=".link"]',
+  intentionHeadline: '.sds-comps-text-type-headline1',
+  intentionPreview: '.sds-comps-text-type-body1',
+  intentionProfile: '.sds-comps-profile-info-title-text a',
+  intentionImage: '.sds-comps-image img',
+} as const;
+
+export const updateSelectors = (
+  partial: Partial<PopularSelectorConfig>,
+): PopularSelectorConfig => ({
+  ...DEFAULT_SELECTORS,
+  ...partial,
+});
