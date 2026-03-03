@@ -1,0 +1,162 @@
+---
+description: 여러 프로젝트에서 공통으로 쓰는 상수, 타입, 유틸 함수를 관리하는 npm 패키지
+thumbnail: /images/portfolio/shared-kit-thumb.jpg
+github: https://github.com/ganggyunggyu/ggg-kit
+demo: https://www.npmjs.com/package/@ganggyunggyu/shared
+featured: false
+period: 2024.12
+role: 1인 개발
+---
+
+# @ganggyunggyu/shared
+
+여러 프로젝트에서 같은 상수, 타입, 유틸 함수를 복붙하다가 관리가 안 돼서 만든 공용 패키지.
+
+## 배경
+
+처음에는 프론트엔드 프로젝트마다 `TAX_RATE = 0.1`, 이메일 정규식, 금액 포매팅 함수를 각각 만들어서 썼다. 근데 세율이 바뀌면 프로젝트마다 찾아서 고쳐야 하고, 백엔드에서 `User` 타입이 바뀌면 프론트도 맞춰서 바꿔야 하는데 자꾸 누락이 생겼다.
+
+그래서 공통으로 쓰는 것들을 npm 패키지로 만들어서 한 곳에서 관리하기로 했다.
+
+---
+
+## 기술 스택
+
+- **TypeScript** - 타입 안전성
+- **tsup** - 번들링 (CJS + ESM 동시 생성)
+- **npm** - 패키지 배포
+
+---
+
+## 주요 기능
+
+- 도메인 상수 (세율, 배송비, 카테고리 목록 등)
+- 공용 타입 정의 (User, ApiResponse, 페이지네이션 등)
+- 유틸 함수 (금액 포매팅, 날짜 포매팅, 이메일/전화번호 검증)
+
+---
+
+## 기술적 도전과제
+
+### 1. 번들 크기 최소화 - Subpath Export 적용
+
+**문제**: 처음에는 모든 걸 하나의 진입점으로 내보냈다.
+
+```typescript
+// 사용하는 쪽
+import { formatAmount } from '@ganggyunggyu/shared';
+```
+
+이러면 `formatAmount` 하나만 쓰는데도 constants, types, 다른 utils까지 전부 번들에 포함된다.
+
+**해결**: package.json의 exports 필드로 여러 진입점을 만들었다.
+
+```json
+// package.json
+{
+  "exports": {
+    ".": { ... },
+    "./constants": {
+      "types": "./dist/constants/index.d.ts",
+      "import": "./dist/constants/index.mjs",
+      "require": "./dist/constants/index.js"
+    },
+    "./types": { ... },
+    "./utils": { ... }
+  }
+}
+```
+
+**결과**: 이제 필요한 것만 import 가능
+
+```typescript
+import { formatAmount } from '@ganggyunggyu/shared/utils';
+import type { User } from '@ganggyunggyu/shared/types';
+```
+
+---
+
+### 2. 타입 안전성 확보 - as const + Type Guard
+
+**문제**: 카테고리 목록을 배열로 정의했는데, 타입 체크가 안 됐다.
+
+**해결**: `as const`로 리터럴 타입을 추출하고, Type Guard 함수를 추가했다.
+
+```typescript
+export const CATEGORIES = ['영어회화', '마사지기', '탈모'] as const;
+
+export type Category = (typeof CATEGORIES)[number];
+
+export const isValidCategory = (value: string): value is Category => {
+  return CATEGORIES.includes(value as Category);
+};
+```
+
+**결과**:
+
+```typescript
+setCategory('없는카테고리'); // 컴파일 에러
+
+if (isValidCategory(userInput)) {
+  const safe: Category = userInput; // 타입 안전
+}
+```
+
+---
+
+### 3. CJS + ESM 동시 지원
+
+**문제**: Node.js CommonJS 환경과 프론트엔드 ESM 환경을 둘 다 지원해야 했다.
+
+**해결**: tsup으로 두 가지 포맷을 동시에 생성
+
+```typescript
+// tsup.config.ts
+export default defineConfig({
+  format: ['cjs', 'esm'],
+  dts: true,
+});
+```
+
+---
+
+## 트러블슈팅
+
+### npm publish 시 401 Unauthorized
+
+GitHub Packages로 배포하려다 토큰 권한 문제로 실패. Classic token에서 `write:packages` 권한을 빠뜨렸다.
+
+결국 npmjs.com public으로 변경해서 해결.
+
+### repository URL 불일치로 403 Forbidden
+
+package.json의 repository URL이 `shared-kit`으로 되어 있었는데, 실제 레포는 `ggg-kit`이었다. URL 맞추니까 해결.
+
+---
+
+## 사용 예시
+
+```typescript
+import { TAX_RATE, FREE_SHIPPING_THRESHOLD } from '@ganggyunggyu/shared/constants';
+import { formatAmount, validateEmail } from '@ganggyunggyu/shared/utils';
+import type { ApiResponse, User } from '@ganggyunggyu/shared/types';
+
+const calculateTotal = (price: number) => {
+  const tax = price * TAX_RATE;
+  const shipping = price >= FREE_SHIPPING_THRESHOLD ? 0 : 3000;
+  return price + tax + shipping;
+};
+
+console.log(formatAmount(calculateTotal(50000))); // "55,000"
+```
+
+---
+
+## 배포 정보
+
+| 항목 | 내용 |
+|------|------|
+| 패키지명 | @ganggyunggyu/shared |
+| 버전 | 0.1.2 |
+| 레지스트리 | npmjs.com (public) |
+| 번들 크기 | ~14KB (gzipped) |
