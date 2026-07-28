@@ -1,6 +1,6 @@
 {
   "name": "@ganggyunggyu/shared",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "GGG 프로젝트 공용 상수/타입/유틸 라이브러리",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -52,6 +52,10 @@
   ],
   "author": "GGG",
   "license": "UNLICENSED",
+  "dependencies": {
+    "clsx": "^2.1.1",
+    "tailwind-merge": "^3.3.1"
+  },
   "devDependencies": {
     "tsup": "^8.0.0",
     "typescript": "^5.6.0",
